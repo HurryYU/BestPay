@@ -1,1 +1,1 @@
-include ':app', ':bestpay-annotations'
+include ':simple', ':bestpay-annotations', ':bestpay-compiler', ':bestpay'

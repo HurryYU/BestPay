@@ -1,8 +1,10 @@
-package com.hurryyu.bestpay;
+package com.hurryyu.bestpay.simple;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+
+//@EnableWxPay(basePackage = "com.hurryyu.bestpay")
 public class MainActivity extends AppCompatActivity {
 
     @Override
