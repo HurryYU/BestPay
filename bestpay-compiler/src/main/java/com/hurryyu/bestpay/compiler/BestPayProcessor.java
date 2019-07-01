@@ -2,6 +2,7 @@ package com.hurryyu.bestpay.compiler;
 
 import com.google.auto.service.AutoService;
 import com.hurryyu.bestpay.annotations.wx.EnableWxPay;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -24,6 +25,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
+@AutoService(Processor.class)
 public class BestPayProcessor extends AbstractProcessor {
 
     private Types typeUtils;
@@ -61,9 +63,9 @@ public class BestPayProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment env) {
         Set<? extends Element> annotatedWith = env.getElementsAnnotatedWith(EnableWxPay.class);
-//        if (annotatedWith.size() < 1) {
-//            return true;
-//        }
+        if (annotatedWith.size() < 1) {
+            return true;
+        }
         if (annotatedWith.size() > 1) {
             error("@EnableWxPay only one can be added, recommended on your Application class");
             return true;
@@ -76,20 +78,17 @@ public class BestPayProcessor extends AbstractProcessor {
     }
 
     private void generateWXPayEntryActivity(String generatePackage) {
-        MethodSpec main = MethodSpec
-                .methodBuilder("main")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .addParameter(String[].class, "args")
-                .addStatement("$T.out.println($S)", System.class, "hello world")
-                .build();
-        TypeSpec hello = TypeSpec.classBuilder("HelloWorld")
+
+        ClassName myWXPayEntryActivity = ClassName.get("com.hurryyu.bestpay", "MyWXPayEntryActivity");
+
+        TypeSpec hello = TypeSpec.classBuilder("WXPayEntryActivity")
                 .addModifiers(Modifier.PUBLIC)
-                .addMethod(main)
+                .superclass(myWXPayEntryActivity)
                 .build();
 
         JavaFile file = JavaFile.builder(generatePackage, hello).build();
         try {
-            file.writeTo(System.out);
+            file.writeTo(filer);
         } catch (IOException e) {
             e.printStackTrace();
         }

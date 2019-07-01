@@ -32,4 +32,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api project(path: ':bestpay-annotations')
+    api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:5.4.0'
 }
