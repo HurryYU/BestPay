@@ -1,5 +1,6 @@
 package com.hurryyu.bestpay;
 
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.tencent.mm.opensdk.modelbase.BaseReq;
@@ -19,7 +20,6 @@ public class MyWXPayEntryActivity extends AppCompatActivity implements IWXAPIEve
 
     @Override
     public void onReq(BaseReq baseReq) {
-
     }
 
     @Override
