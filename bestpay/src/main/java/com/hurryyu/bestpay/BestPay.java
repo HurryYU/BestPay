@@ -16,6 +16,7 @@ import com.hurryyu.bestpay.annotations.wx.WxTimestamp;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,14 +94,20 @@ public class BestPay {
     }
 
     private static String parseWxPayModelField(Field field, Object object) {
-        field.setAccessible(true);
+        boolean isAccessible = field.getModifiers() == Modifier.PUBLIC;
+        if (!isAccessible){
+            field.setAccessible(true);
+        }
+
         String data = "";
         try {
             data = String.valueOf(field.get(object));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } finally {
-            field.setAccessible(false);
+            if (!isAccessible){
+                field.setAccessible(false);
+            }
         }
         return data;
     }
