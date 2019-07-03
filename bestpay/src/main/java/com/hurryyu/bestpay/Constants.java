@@ -9,6 +9,12 @@ package com.hurryyu.bestpay;
  * Description:
  * ===========================================================
  */
-public class Constants {
+class Constants {
+    static final String PAY_RESULT_BROADCAST_ACTION = "com.hurryyu.bestpay.pay.result";
 
+    static final String PAY_TYPE_OK = "PAY_TYPE_OK";
+
+    static final String PAY_TYPE_ERROR = "PAY_TYPE_ERROR";
+
+    static final String PAY_TYPE_CANCEL = "PAY_TYPE_CANCEL";
 }
