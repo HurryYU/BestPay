@@ -2,7 +2,7 @@ package com.hurryyu.bestpay.simple;
 
 import com.hurryyu.bestpay.annotations.wx.*;
 
-@WxPayModel(basePackage = "com.hurryyu.bestpay.simple", appId = "wx45646048960b")
+@WxPayModel(basePackage = "com.hurryyu.bestpay.simple", appId = "wx8888888888888888")
 public class WeChatPayModel {
     @WxAppId
     private String appid;

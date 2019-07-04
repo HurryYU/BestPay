@@ -22,6 +22,7 @@ public class MyWXPayEntryActivity extends AppCompatActivity implements IWXAPIEve
 
     @Override
     public void onReq(BaseReq baseReq) {
+        System.out.println(baseReq);
     }
 
     @Override

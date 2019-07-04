@@ -3,6 +3,9 @@ package com.hurryyu.bestpay;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.hurryyu.bestpay.annotations.wx.WxAppId;
 import com.hurryyu.bestpay.annotations.wx.WxNonceStr;
@@ -12,29 +15,20 @@ import com.hurryyu.bestpay.annotations.wx.WxPayModel;
 import com.hurryyu.bestpay.annotations.wx.WxPrepayId;
 import com.hurryyu.bestpay.annotations.wx.WxSign;
 import com.hurryyu.bestpay.annotations.wx.WxTimestamp;
+import com.tencent.mm.opensdk.modelpay.PayReq;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Proxy;
 
 public class BestPay {
 
     private static Application sApplication;
-
-    private static List<Class<? extends Annotation>> annotationsList =
-            new ArrayList<Class<? extends Annotation>>() {{
-                add(WxAppId.class);
-                add(WxNonceStr.class);
-                add(WxPackage.class);
-                add(WxPartnerId.class);
-                add(WxPayModel.class);
-                add(WxPrepayId.class);
-                add(WxSign.class);
-                add(WxTimestamp.class);
-            }};
 
     public static void init(Context context) {
         if (context == null) {
@@ -54,11 +48,46 @@ public class BestPay {
         }
     }
 
-    public static void wxPay(Object payModel, OnPayResultListener listener) {
+    public synchronized static void wxPay(Object payModel, @NonNull final OnPayResultListener listener) {
         if (sApplication == null) {
             throw new NullPointerException("you should call BestPay.init() in Application first");
         }
         WxPayBean wxPayBean = parseWxPayModel(payModel);
+
+        final PayResultReceiver payResultReceiver = new PayResultReceiver();
+        OnPayResultListener listenerProxy = (OnPayResultListener) Proxy.newProxyInstance(
+                BestPay.class.getClassLoader(),
+                new Class[]{OnPayResultListener.class},
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        Object invoke = method.invoke(listener, args);
+                        LocalBroadcastManager.getInstance(sApplication).unregisterReceiver(payResultReceiver);
+                        return invoke;
+                    }
+                });
+        payResultReceiver.setOnPayResultListener(listenerProxy);
+        LocalBroadcastManager
+                .getInstance(sApplication)
+                .registerReceiver(payResultReceiver,
+                        new IntentFilter(Constants.PAY_RESULT_BROADCAST_ACTION));
+
+        startWxPay(wxPayBean);
+    }
+
+    private static void startWxPay(WxPayBean payBean) {
+        IWXAPI iwxapi = WXAPIFactory.createWXAPI(sApplication, payBean.getAppId(), false);
+        iwxapi.registerApp(payBean.getAppId());
+
+        PayReq payRequest = new PayReq();
+        payRequest.appId = payBean.getAppId();
+        payRequest.partnerId = payBean.getPartnerId();
+        payRequest.prepayId = payBean.getPrepayId();
+        payRequest.nonceStr = payBean.getNonceStr();
+        payRequest.timeStamp = payBean.getTimestamp();
+        payRequest.sign = payBean.getSign();
+        payRequest.packageValue = payBean.getPackageStr();
+        iwxapi.sendReq(payRequest);
     }
 
     private static WxPayBean parseWxPayModel(Object payBean) {
@@ -95,7 +124,7 @@ public class BestPay {
 
     private static String parseWxPayModelField(Field field, Object object) {
         boolean isAccessible = field.getModifiers() == Modifier.PUBLIC;
-        if (!isAccessible){
+        if (!isAccessible) {
             field.setAccessible(true);
         }
 
@@ -105,7 +134,7 @@ public class BestPay {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } finally {
-            if (!isAccessible){
+            if (!isAccessible) {
                 field.setAccessible(false);
             }
         }
