@@ -21,7 +21,24 @@ public class MainActivity extends AppCompatActivity {
         weChatPayModel.setSign("C380BEC2BFD727A4B6845133519F3AD6");
         weChatPayModel.setTimestamp(1412000000);
 
-        BestPay.wxPay(weChatPayModel, new OnPayResultListener() {
+//        BestPay.wxPay(weChatPayModel, new OnPayResultListener() {
+//            @Override
+//            public void onPaySuccess() {
+//                System.out.println("success");
+//            }
+//
+//            @Override
+//            public void onPayError(int errorCode, String errorStr) {
+//                System.out.println("error");
+//            }
+//
+//            @Override
+//            public void onPayCancel() {
+//                System.out.println("cancel");
+//            }
+//        });
+
+        BestPay.aliPay(this, "fsdfsdfsdfsdfsdf", new OnPayResultListener() {
             @Override
             public void onPaySuccess() {
                 System.out.println("success");

@@ -4,6 +4,11 @@ android {
     compileSdkVersion 28
     buildToolsVersion "29.0.0"
 
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
 
     defaultConfig {
         minSdkVersion 15
@@ -12,7 +17,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -21,7 +25,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -33,4 +36,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api project(path: ':bestpay-annotations')
     api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:5.4.0'
+    api (name: 'alipaySdk-15.6.4-20190611174359-noUtdid', ext: 'aar')
 }

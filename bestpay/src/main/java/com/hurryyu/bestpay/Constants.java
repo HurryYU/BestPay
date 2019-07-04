@@ -12,9 +12,9 @@ package com.hurryyu.bestpay;
 class Constants {
     static final String PAY_RESULT_BROADCAST_ACTION = "com.hurryyu.bestpay.pay.result";
 
-    static final String PAY_TYPE_OK = "PAY_TYPE_OK";
+    static final int PAY_TYPE_OK = 1;
 
-    static final String PAY_TYPE_ERROR = "PAY_TYPE_ERROR";
+    static final int PAY_TYPE_ERROR = 2;
 
-    static final String PAY_TYPE_CANCEL = "PAY_TYPE_CANCEL";
+    static final int PAY_TYPE_CANCEL = 3;
 }

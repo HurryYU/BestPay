@@ -14,7 +14,7 @@ public class PayResultReceiver extends BroadcastReceiver {
             return;
         }
 
-        String type = intent.getStringExtra("type");
+        int type = intent.getIntExtra("type", 0);
         switch (type) {
             case Constants.PAY_TYPE_OK:
                 mListener.onPaySuccess();
@@ -27,6 +27,8 @@ public class PayResultReceiver extends BroadcastReceiver {
             case Constants.PAY_TYPE_CANCEL:
                 mListener.onPayCancel();
                 break;
+            default:
+                mListener.onPayError(0, "");
         }
         mListener = null;
     }

@@ -1,12 +1,17 @@
 package com.hurryyu.bestpay;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 
+import com.alipay.sdk.app.PayTask;
 import com.hurryyu.bestpay.annotations.wx.WxAppId;
 import com.hurryyu.bestpay.annotations.wx.WxNonceStr;
 import com.hurryyu.bestpay.annotations.wx.WxPackage;
@@ -19,12 +24,14 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 
 public class BestPay {
 
@@ -48,7 +55,7 @@ public class BestPay {
         }
     }
 
-    public synchronized static void wxPay(Object payModel, @NonNull final OnPayResultListener listener) {
+    public synchronized static void wxPay(Object payModel, final OnPayResultListener listener) {
         if (sApplication == null) {
             throw new NullPointerException("you should call BestPay.init() in Application first");
         }
@@ -75,6 +82,81 @@ public class BestPay {
         startWxPay(wxPayBean);
     }
 
+    public static void aliPay(final Activity act, final String orderInfo, OnPayResultListener listener) {
+        if (sApplication == null) {
+            throw new NullPointerException("you should call BestPay.init() in Application first");
+        }
+        if (TextUtils.isEmpty(orderInfo)) {
+            throw new NullPointerException("Alipay pay information is empty");
+        }
+
+        final AliPayHandler handler = new AliPayHandler(listener);
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                PayTask payTask = new PayTask(act);
+                Map<String, String> result = payTask.payV2(orderInfo, true);
+                Message message = Message.obtain();
+
+                String code = result.get("code");
+                if (code == null || code.equals("")) {
+                    message.what = Constants.PAY_TYPE_ERROR;
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("errCode", 0);
+                    bundle.putString("errStr", "");
+                    message.setData(bundle);
+                } else if (TextUtils.equals("9000", code)) {
+                    message.what = Constants.PAY_TYPE_OK;
+                } else if (TextUtils.equals("6001", code)) {
+                    message.what = Constants.PAY_TYPE_CANCEL;
+                } else {
+                    message.what = Constants.PAY_TYPE_ERROR;
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("errCode", Integer.parseInt(code));
+                    bundle.putString("errStr", result.get("msg"));
+                    message.setData(bundle);
+                }
+
+                handler.sendMessage(message);
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    private static class AliPayHandler extends Handler {
+
+        private WeakReference<OnPayResultListener> listenerWeakReference;
+
+        AliPayHandler(OnPayResultListener listener) {
+            this.listenerWeakReference = new WeakReference<>(listener);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            OnPayResultListener onPayResultListener = listenerWeakReference.get();
+            if (onPayResultListener != null) {
+                int what = msg.what;
+                switch (what) {
+                    case Constants.PAY_TYPE_OK:
+                        onPayResultListener.onPaySuccess();
+                        break;
+                    case Constants.PAY_TYPE_CANCEL:
+                        onPayResultListener.onPayCancel();
+                        break;
+                    case Constants.PAY_TYPE_ERROR:
+                        Bundle data = msg.getData();
+                        int errCode = data.getInt("errCode");
+                        String errStr = data.getString("errStr");
+                        onPayResultListener.onPayError(errCode, errStr);
+                        break;
+                }
+
+            }
+        }
+    }
+
     private static void startWxPay(WxPayBean payBean) {
         IWXAPI iwxapi = WXAPIFactory.createWXAPI(sApplication, payBean.getAppId(), false);
         iwxapi.registerApp(payBean.getAppId());
@@ -91,6 +173,9 @@ public class BestPay {
     }
 
     private static WxPayBean parseWxPayModel(Object payBean) {
+        if (payBean == null) {
+            throw new NullPointerException("WeChat payment entity class is empty");
+        }
         Class<?> clazz = payBean.getClass();
         if (!clazz.isAnnotationPresent(WxPayModel.class)) {
             throw new RuntimeException("You must use the @WxPayModel annotation on the WeChat payment entity class");
@@ -98,6 +183,7 @@ public class BestPay {
 
         WxPayBean wxPayBean = new WxPayBean();
         WxPayModel wxPayModelAnnotation = clazz.getAnnotation(WxPayModel.class);
+        assert wxPayModelAnnotation != null;
         wxPayBean.setAppId(wxPayModelAnnotation.appId());
         wxPayBean.setPackageStr("Sign=WXPay");
 
