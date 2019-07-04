@@ -87,7 +87,7 @@ public class BestPay {
             throw new NullPointerException("you should call BestPay.init() in Application first");
         }
         if (TextUtils.isEmpty(orderInfo)) {
-            throw new NullPointerException("Alipay pay information is empty");
+            throw new NullPointerException("alipay pay information is empty");
         }
 
         final AliPayHandler handler = new AliPayHandler(listener);
@@ -99,7 +99,7 @@ public class BestPay {
                 Map<String, String> result = payTask.payV2(orderInfo, true);
                 Message message = Message.obtain();
 
-                String code = result.get("code");
+                String code = result.get("resultStatus");
                 if (code == null || code.equals("")) {
                     message.what = Constants.PAY_TYPE_ERROR;
                     Bundle bundle = new Bundle();
@@ -114,7 +114,7 @@ public class BestPay {
                     message.what = Constants.PAY_TYPE_ERROR;
                     Bundle bundle = new Bundle();
                     bundle.putInt("errCode", Integer.parseInt(code));
-                    bundle.putString("errStr", result.get("msg"));
+                    bundle.putString("errStr", result.get("memo"));
                     message.setData(bundle);
                 }
 
