@@ -1,4 +1,4 @@
-package com.hurryyu.bestpay.simple;
+package com.hurryyu.bestpay.simple.bean;
 
 import com.hurryyu.bestpay.annotations.wx.*;
 
