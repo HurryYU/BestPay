@@ -1,4 +1,5 @@
 apply plugin: 'java-library'
+//apply plugin: 'com.novoda.bintray-release'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -10,3 +11,13 @@ dependencies {
 
 sourceCompatibility = "8"
 targetCompatibility = "8"
+
+//publish {
+//    userOrg = rootProject.userOrg
+//    groupId = rootProject.groupId
+//    artifactId = 'bestpay-compiler'
+//    repoName = rootProject.repoName
+//    publishVersion = rootProject.publishVersion
+//    desc = '生成WxPayEntryActivity'
+//    website = rootProject.website
+//}

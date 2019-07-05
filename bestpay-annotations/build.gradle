@@ -1,8 +1,19 @@
 apply plugin: 'java-library'
+//apply plugin: 'com.novoda.bintray-release'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-sourceCompatibility = "7"
-targetCompatibility = "7"
+sourceCompatibility = "8"
+targetCompatibility = "8"
+
+//publish {
+//    userOrg = rootProject.userOrg
+//    groupId = rootProject.groupId
+//    artifactId = 'bestpay-annotations'
+//    repoName = rootProject.repoName
+//    publishVersion = rootProject.publishVersion
+//    desc = '注解'
+//    website = rootProject.website
+//}

@@ -1,14 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 28
     buildToolsVersion "29.0.0"
-
-    repositories {
-        flatDir {
-            dirs 'libs'
-        }
-    }
 
     defaultConfig {
         minSdkVersion 15
@@ -28,7 +23,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
@@ -36,5 +31,14 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api project(path: ':bestpay-annotations')
     api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:5.4.0'
-    api (name: 'alipaySdk-15.6.4-20190611174359-noUtdid', ext: 'aar')
+}
+
+publish {
+    userOrg = rootProject.userOrg
+    groupId = rootProject.groupId
+    artifactId = 'bestpay'
+    repoName = rootProject.repoName
+    publishVersion = rootProject.publishVersion
+    desc = '以最简单的方式快速集成App支付功能'
+    website = rootProject.website
 }
