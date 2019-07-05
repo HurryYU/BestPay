@@ -69,7 +69,9 @@ public class BestPay {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         Object invoke = method.invoke(listener, args);
-                        LocalBroadcastManager.getInstance(sApplication).unregisterReceiver(payResultReceiver);
+                        LocalBroadcastManager
+                                .getInstance(sApplication)
+                                .unregisterReceiver(payResultReceiver);
                         return invoke;
                     }
                 });
@@ -178,7 +180,8 @@ public class BestPay {
         }
         Class<?> clazz = payBean.getClass();
         if (!clazz.isAnnotationPresent(WxPayModel.class)) {
-            throw new RuntimeException("You must use the @WxPayModel annotation on the WeChat payment entity class");
+            throw new RuntimeException("You must use the @WxPayModel annotation on the WeChat " +
+                    "payment entity class");
         }
 
         WxPayBean wxPayBean = new WxPayBean();
