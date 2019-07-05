@@ -30,6 +30,9 @@ ext {
     userOrg = 'hurryyu'
     groupId = 'com.hurryyu'
     repoName = 'BestPay'
-    publishVersion = '1.0.0'
     website = 'https://github.com/HurryYU/BestPay'
+
+    bestpayVersion = '1.0.0'
+    bestpayAnnotationsVersion = '1.0.0'
+    bestpayCompilerVersion = '1.0.0'
 }

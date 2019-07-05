@@ -1,23 +1,23 @@
 apply plugin: 'java-library'
-//apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.novoda.bintray-release'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly 'com.google.auto.service:auto-service:1.0-rc5'
     annotationProcessor 'com.google.auto.service:auto-service:1.0-rc5'
     implementation 'com.squareup:javapoet:1.11.1'
-    implementation project(path: ':bestpay-annotations')
+    implementation "com.hurryyu:bestpay-annotations:$rootProject.bestpayAnnotationsVersion"
 }
 
 sourceCompatibility = "8"
 targetCompatibility = "8"
 
-//publish {
-//    userOrg = rootProject.userOrg
-//    groupId = rootProject.groupId
-//    artifactId = 'bestpay-compiler'
-//    repoName = rootProject.repoName
-//    publishVersion = rootProject.publishVersion
-//    desc = '生成WxPayEntryActivity'
-//    website = rootProject.website
-//}
+publish {
+    userOrg = rootProject.userOrg
+    groupId = rootProject.groupId
+    artifactId = 'bestpay-compiler'
+    repoName = rootProject.repoName
+    publishVersion = rootProject.bestpayCompilerVersion
+    desc = '生成WxPayEntryActivity'
+    website = rootProject.website
+}

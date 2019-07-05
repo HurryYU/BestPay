@@ -29,7 +29,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    api project(path: ':bestpay-annotations')
+    api "com.hurryyu:bestpay-annotations:$rootProject.bestpayAnnotationsVersion"
     api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:5.4.0'
 }
 
@@ -38,7 +38,7 @@ publish {
     groupId = rootProject.groupId
     artifactId = 'bestpay'
     repoName = rootProject.repoName
-    publishVersion = rootProject.publishVersion
+    publishVersion = rootProject.bestpayVersion
     desc = '以最简单的方式快速集成App支付功能'
     website = rootProject.website
 }
