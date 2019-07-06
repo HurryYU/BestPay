@@ -63,16 +63,22 @@ public class WeChatPayModel {
 public class WeChatPayModel {
     @WxAppId
     private String appid;
+    
     @WxPartnerId
     private String partnerid;
+    
     @WxPrepayId
     private String prepayid;
+    
     @WxPackage
     private String mypackage;
+    
     @WxNonceStr
     private String noncestr;
+    
     @WxTimestamp
     private long timestamp;
+    
     @WxSign
     private String sign;
 }
